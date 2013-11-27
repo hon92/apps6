@@ -1,0 +1,147 @@
+package picture;
+
+public class TestPicture
+{
+	private char img1 [][];
+	private char img2 [][];
+	private char tmp [][];
+	private int size;
+	private int horizonttrans;	
+	private boolean sameimg;
+	private boolean mirror;
+	private int angle;
+	
+	
+	public TestPicture(char i1[][], char i2[][])
+	{
+		this.img1 = i1;
+		this.img2 = i2;	
+		size = i1.length;
+		tmp = new char [size][size];
+		horizonttrans = -1;	
+		sameimg = false;
+		mirror = false;
+		angle = -1;
+		
+	}
+	private boolean exactMatch(char poleA[][],char poleB[][])
+	{
+		for(int i=0; i<size;i++)
+		{
+			for(int j = 0; j < size;j++)
+			{
+				if(poleA[i][j] != poleB[i][j])
+					return false;
+			}
+		}
+		return true;
+		
+	}
+	private boolean mirrorMatch()
+	{
+		for(int i=0, j= size -1; i<size ;i++,j--)
+		{
+			for(int k = 0; k<size;k++)
+			{
+				if(img1[i][k] != img2[j][k])
+					return false;
+			}
+		}
+		
+		return true;
+		
+	}
+	private void rotate90(char rotate[][])
+	{
+		tmp = new char [size][size];
+		
+		for(int i = 0,r = size-1; i<size;i++,r--)
+		{
+			for(int j = 0,s=size-1; j<size;j++,s--)
+			{
+				tmp[i][j] = rotate[s][i];
+			}
+		}
+						
+	}
+	private int angleMatch()
+	{
+		
+		
+		rotate90(img1);//o 90 stupnu
+		boolean same90 = exactMatch(tmp,img2);		
+		mirror = mirrorMatch();
+		horizonttrans = horizontalTransformation(tmp,img2,90);
+		
+		
+		rotate90(tmp); // o 180 stupnu
+		boolean same180 = exactMatch(tmp,img2);
+		mirror = mirrorMatch();
+		horizonttrans = horizontalTransformation(tmp,img2,180);
+		
+		rotate90(tmp); // o 270 stupnu
+		boolean same270 = exactMatch(tmp, img2);
+		mirror = mirrorMatch();
+		sameimg = exactMatch(img1,img2);
+		horizonttrans = horizontalTransformation(tmp,img2,270);
+		
+		if(same90)
+			return 90;
+		if(same180)
+			return 180;
+		if(same270)
+			return 270;
+		
+		return -1;
+								
+	}
+	private int horizontalTransformation(char poleA[][],char poleB[][],int a)
+	{
+		int angle = a;
+		
+		for(int i = 0; i < size; i++)
+		{
+			for(int j = 0,s = size -1; j < size; j++,s--)
+			{
+				if(poleA[i][j] != poleB[i][s])
+					return -1;
+			}
+		}
+		
+		return angle;
+		
+	}
+	public void getDifference()
+	{
+		mirror = mirrorMatch();
+		sameimg = exactMatch(img1,img2);
+		horizonttrans = horizontalTransformation(img1, img2, 0);
+		angle = angleMatch();
+		
+		/*
+		System.out.println(mirror);
+		System.out.println(sameimg);
+		System.out.println(angle);
+		System.out.println(horizonttrans);
+		*/
+		if(horizonttrans == 0)
+			System.out.println("Osove zrcadleni");
+		
+		if(horizonttrans != -1 )
+			System.out.println("Zrcadleni a otoceni o " + horizonttrans + " stupnu");
+						
+		if(mirror)
+			System.out.println("Zrcadleni");
+		
+		if(sameimg)
+			System.out.println("Stejne obrazy");
+		
+		if(angle != -1)
+			System.out.println("Otoceni o " + angle + " stupnu");
+		
+		
+		if(!mirror && !sameimg && angle == -1 && horizonttrans == -1)
+			System.out.println("Ruzne obrazy");
+				
+	}
+}
